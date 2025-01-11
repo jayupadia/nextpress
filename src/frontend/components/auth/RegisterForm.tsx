@@ -7,12 +7,17 @@ import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
 import { registerSchema } from '@/backend/modules/auth/authValidation';
 import { useAuth } from '@/frontend/services/authService';
+import { useLanguage } from '@/frontend/services/languageService';
+import { translations } from '@/frontend/locales/translations';
 
 export const RegisterForm = () => {
   const router = useRouter();
   const { register } = useAuth();
+  const { currentLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const t = translations[currentLanguage.code as keyof typeof translations]?.register || translations['en-US'].register;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,23 +51,23 @@ export const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" style={{ direction: currentLanguage.code === 'ar' ? 'rtl' : 'ltr' }}>
       <Input
-        label="Name"
+        label={t.name}
         name="name"
         type="text"
         required
         error={errors.name}
       />
       <Input
-        label="Email"
+        label={t.email}
         name="email"
         type="email"
         required
         error={errors.email}
       />
       <Input
-        label="Password"
+        label={t.password}
         name="password"
         type="password"
         required
@@ -73,10 +78,12 @@ export const RegisterForm = () => {
         isLoading={isLoading}
         className="w-full"
       >
-        Register
+        {t.submit}
       </Button>
     </form>
   );
 };
+
+
 
 export default RegisterForm;
